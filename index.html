@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA GM Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 50%, #9b59b6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            font-weight: 500;
+        }
+
+        .header .basketball {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tips Section */
+        .tips-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .tips-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #f39c12;
+        }
+
+        .tip-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .tip-card.rebuild { border-left-color: #e67e22; }
+        .tip-card.rising { border-left-color: #3498db; }
+        .tip-card.winnow { border-left-color: #27ae60; }
+        .tip-card.info { border-left-color: #9b59b6; }
+
+        .tip-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tip-card p {
+            color: #b0b0b0;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .tip-card .example {
+            background: rgba(0,0,0,0.2);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* Game Section */
+        .game-section {
+            display: grid;
+            gap: 25px;
+        }
+
+        .round-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .round-card:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .round-card.selected {
+            border-color: #27ae60;
+            box-shadow: 0 0 30px rgba(39, 174, 96, 0.2);
+        }
+
+        .round-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .round-number {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .team-situation {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .team-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .team-icon.rebuild { background: linear-gradient(135deg, #e67e22, #d35400); }
+        .team-icon.rising { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .team-icon.winnow { background: linear-gradient(135deg, #27ae60, #1e8449); }
+
+        .team-info h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .team-info p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .your-pick {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #f39c12;
+        }
+
+        /* Trade Options */
+        .trade-options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .trade-option {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .trade-option:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+
+        .trade-option.selected {
+            background: rgba(39, 174, 96, 0.2);
+            border-color: #27ae60;
+        }
+
+        .trade-option .radio {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #666;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .trade-option.selected .radio {
+            border-color: #27ae60;
+            background: #27ae60;
+        }
+
+        .trade-option.selected .radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+        .trade-details h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .trade-details p {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .trade-example {
+            font-size: 0.75rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .trade-scores {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .score-badge {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .score-badge.value { background: rgba(52, 152, 219, 0.3); color: #3498db; }
+        .score-badge.quality-pos { background: rgba(39, 174, 96, 0.3); color: #27ae60; }
+        .score-badge.quality-neg { background: rgba(231, 76, 60, 0.3); color: #e74c3c; }
+        .score-badge.fit-good { background: rgba(39, 174, 96, 0.3); color: #27ae60; }
+        .score-badge.fit-bad { background: rgba(231, 76, 60, 0.3); color: #e74c3c; }
+
+        /* Score Display */
+        .score-section {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-item .label {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .score-item .value {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .score-item .value.pending {
+            color: #666;
+        }
+
+        .total-score {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .gm-rating {
+            font-size: 1.5rem;
+            font-weight: 700;
+            padding: 15px 30px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+
+        .gm-rating.hof { background: linear-gradient(135deg, #f39c12, #e74c3c); }
+        .gm-rating.allstar { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .gm-rating.solid { background: linear-gradient(135deg, #27ae60, #1e8449); }
+        .gm-rating.rookie { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .gm-rating.pending { background: rgba(255,255,255,0.1); color: #888; }
+
+        .reset-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Scoring Guide */
+        .scoring-guide {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .scoring-guide h4 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: #f39c12;
+        }
+
+        .scoring-guide .formula {
+            background: rgba(0,0,0,0.2);
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .rating-tiers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .tier {
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .tier.hof { background: rgba(243, 156, 18, 0.2); border-left: 3px solid #f39c12; }
+        .tier.allstar { background: rgba(155, 89, 182, 0.2); border-left: 3px solid #9b59b6; }
+        .tier.solid { background: rgba(39, 174, 96, 0.2); border-left: 3px solid #27ae60; }
+        .tier.rookie { background: rgba(231, 76, 60, 0.2); border-left: 3px solid #e74c3c; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .trade-option {
+                grid-template-columns: auto 1fr;
+            }
+
+            .trade-scores {
+                grid-column: 1 / -1;
+                margin-top: 10px;
+            }
+
+            .score-display {
+                gap: 20px;
+            }
+
+            .total-score {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="basketball">🏀</div>
+            <h1>THE NBA GM CHALLENGE</h1>
+            <p class="subtitle">Make Real Trades Like a Real General Manager!</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="game">Play the Game</button>
+            <button class="tab-btn" data-tab="tips">How to Think Like a GM</button>
+        </div>
+
+        <!-- Tips Tab -->
+        <div id="tips" class="tab-content">
+            <div class="tips-section">
+                <h2>🧠 How to Think Like an NBA GM</h2>
+
+                <div class="tip-card info">
+                    <h3>📋 What's a GM?</h3>
+                    <p>A General Manager (GM) is the person who builds the team's roster. They make trades, sign free agents, and pick players in the draft. Think of them as the team's architect!</p>
+                </div>
+
+                <h2 style="margin: 30px 0 20px;">The Three Team Types</h2>
+
+                <div class="tip-card rebuild">
+                    <h3>🔨 REBUILDING TEAMS (4+ year plan)</h3>
+                    <p><strong>Example:</strong> San Antonio Spurs after trading away their veterans</p>
+                    <p><strong>Goal:</strong> Collect young players and draft picks for the future</p>
+                    <p><strong>Best moves:</strong> Keep picks, trade down for more picks, develop young talent</p>
+                    <p><strong>Worst moves:</strong> Trading for expensive veterans who'll be old when you're good</p>
+                    <div class="example">
+                        ✅ OKC collected tons of draft picks while rebuilding — now they have Shai Gilgeous-Alexander + a great young core!
+                    </div>
+                </div>
+
+                <div class="tip-card rising">
+                    <h3>📈 RISING TEAMS (2 year window)</h3>
+                    <p><strong>Example:</strong> OKC Thunder with their young superstar core</p>
+                    <p><strong>Goal:</strong> Add pieces that help you compete soon without giving up the future</p>
+                    <p><strong>Best moves:</strong> Keep picks or make balanced trades for players ready to contribute</p>
+                    <p><strong>Worst moves:</strong> Being too aggressive OR too patient — find the balance!</p>
+                    <div class="example">
+                        ✅ The Knicks traded for OG Anunoby at the right time — he fit their rising timeline perfectly!
+                    </div>
+                </div>
+
+                <div class="tip-card winnow">
+                    <h3>🏆 WIN NOW TEAMS (Championship window is NOW)</h3>
+                    <p><strong>Example:</strong> Boston Celtics who just won the championship</p>
+                    <p><strong>Goal:</strong> Win a championship THIS YEAR — future picks don't matter as much</p>
+                    <p><strong>Best moves:</strong> Trade picks for veterans who can help you win immediately</p>
+                    <p><strong>Worst moves:</strong> Keeping picks (rookies rarely help championship teams)</p>
+                    <div class="example">
+                        ✅ Boston traded a 1st round pick for Derrick White — he helped them win the championship!
+                    </div>
+                </div>
+
+                <h2 style="margin: 30px 0 20px;">Understanding Trade Types</h2>
+
+                <div class="tip-card info">
+                    <h3>⬆️ Trade Up</h3>
+                    <p>Move to an earlier pick (costs extra assets). You get a better chance at a star, but you pay picks/players to do it.</p>
+                </div>
+
+                <div class="tip-card info">
+                    <h3>⬇️ Trade Down</h3>
+                    <p>Move to a later pick (gain extra assets). You get more picks total, but each pick is less valuable.</p>
+                </div>
+
+                <div class="tip-card info">
+                    <h3>👔 Trade for Veteran</h3>
+                    <p>Exchange pick for a proven NBA player. You know what you're getting, but the player might not fit your timeline.</p>
+                </div>
+
+                <div class="tip-card info">
+                    <h3>⭐ Swing for a Star</h3>
+                    <p>Go big! Trade lots of assets for a star player. High reward potential, but RISKY if it doesn't work out.</p>
+                    <div class="example">
+                        ❌ Brooklyn traded ALL their picks for aging stars... then the stars got hurt and left. Now they have nothing!
+                    </div>
+                </div>
+
+                <div class="tip-card" style="border-left-color: #e74c3c; background: rgba(231,76,60,0.1); margin-top: 30px;">
+                    <h3>💡 THE BIG LESSON</h3>
+                    <p style="font-size: 1.1rem; color: #fff;"><strong>The SAME trade can be good for one team and bad for another.</strong></p>
+                    <p>It all depends on your TIMELINE — when are you trying to win?</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Tab -->
+        <div id="game" class="tab-content active">
+            <div class="game-section">
+
+                <!-- Round 1 -->
+                <div class="round-card" id="round1-card">
+                    <div class="round-header">
+                        <div class="team-situation">
+                            <div class="team-icon rebuild">🔨</div>
+                            <div class="team-info">
+                                <div class="round-number">Round 1</div>
+                                <h3>REBUILDING (4 years)</h3>
+                                <p>Think: San Antonio Spurs</p>
+                            </div>
+                        </div>
+                        <div class="your-pick">Pick #8</div>
+                    </div>
+                    <div class="trade-options" id="round1-options">
+                        <div class="trade-option" data-round="1" data-option="tradeUp">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>⬆️ Trade Up</h4>
+                                <p>Trade Pick #8 + future 2nds → Get Pick #5</p>
+                                <div class="trade-example">Like when Atlanta traded up to draft Trae Young</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 2</span>
+                                <span class="score-badge quality-pos">Quality: +1</span>
+                                <span class="score-badge fit-good">Fit: Perfect</span>
+                            </div>
+                        </div>
+                        <div class="trade-option" data-round="1" data-option="tradeDown">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>⬇️ Trade Down</h4>
+                                <p>Trade Pick #8 → Get Pick #15 + Pick #34</p>
+                                <div class="trade-example">Like when OKC collected tons of picks to rebuild</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 1</span>
+                                <span class="score-badge quality-pos">Quality: +2</span>
+                                <span class="score-badge fit-good">Fit: Perfect</span>
+                            </div>
+                        </div>
+                        <div class="trade-option" data-round="1" data-option="keep">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>✋ Keep Pick</h4>
+                                <p>Keep Pick #8 and draft the best player available</p>
+                                <div class="trade-example">Like when San Antonio kept their pick and got Devin Vassell</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 1</span>
+                                <span class="score-badge quality-pos">Quality: +1</span>
+                                <span class="score-badge fit-good">Fit: Perfect</span>
+                            </div>
+                        </div>
+                        <div class="trade-option" data-round="1" data-option="veteran">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>👔 Trade for Veteran</h4>
+                                <p>Trade Pick #8 → Get Malcolm Brogdon (28yo starting guard)</p>
+                                <div class="trade-example">Like when Indiana traded a pick for Malcolm Brogdon</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 1</span>
+                                <span class="score-badge quality-neg">Quality: 0</span>
+                                <span class="score-badge fit-bad">Fit: Wrong timeline!</span>
+                            </div>
+                        </div>
+                        <div class="trade-option" data-round="1" data-option="star">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>⭐ Swing for a Star</h4>
+                                <p>Trade Pick #8 + 2028 1st → Get Dejounte Murray (26yo All-Star)</p>
+                                <div class="trade-example">Like when Atlanta traded picks for Dejounte Murray</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 1</span>
+                                <span class="score-badge quality-neg">Quality: -2</span>
+                                <span class="score-badge fit-bad">Fit: Wrong timeline!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Round 2 -->
+                <div class="round-card" id="round2-card">
+                    <div class="round-header">
+                        <div class="team-situation">
+                            <div class="team-icon rising">📈</div>
+                            <div class="team-info">
+                                <div class="round-number">Round 2</div>
+                                <h3>RISING (2 years)</h3>
+                                <p>Think: OKC Thunder</p>
+                            </div>
+                        </div>
+                        <div class="your-pick">Pick #12</div>
+                    </div>
+                    <div class="trade-options" id="round2-options">
+                        <div class="trade-option" data-round="2" data-option="tradeUp">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>⬆️ Trade Up</h4>
+                                <p>Trade Pick #12 + Pick #40 → Get Pick #7</p>
+                                <div class="trade-example">Like when Charlotte traded up to draft LaMelo Ball</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 2</span>
+                                <span class="score-badge quality-pos">Quality: +1</span>
+                                <span class="score-badge fit-good">Fit: Good</span>
+                            </div>
+                        </div>
+                        <div class="trade-option" data-round="2" data-option="tradeDown">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>⬇️ Trade Down</h4>
+                                <p>Trade Pick #12 → Get Pick #20 + future protected 1st</p>
+                                <div class="trade-example">Like when Houston kept adding picks during rebuild</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 2</span>
+                                <span class="score-badge quality-pos">Quality: +2</span>
+                                <span class="score-badge fit-good">Fit: Good</span>
+                            </div>
+                        </div>
+                        <div class="trade-option" data-round="2" data-option="keep">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>✋ Keep Pick</h4>
+                                <p>Keep Pick #12 and draft a player who can help in 2 years</p>
+                                <div class="trade-example">Like when Memphis kept pick #12 and got Jaren Jackson Jr.</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 1</span>
+                                <span class="score-badge quality-pos">Quality: +2</span>
+                                <span class="score-badge fit-good">Fit: Perfect</span>
+                            </div>
+                        </div>
+                        <div class="trade-option" data-round="2" data-option="veteran">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>👔 Trade for Veteran</h4>
+                                <p>Trade Pick #12 → Get Brook Lopez (35yo stretch big)</p>
+                                <div class="trade-example">Like when Milwaukee traded for Brook Lopez</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 1</span>
+                                <span class="score-badge quality-neg">Quality: -1</span>
+                                <span class="score-badge fit-good">Fit: Okay</span>
+                            </div>
+                        </div>
+                        <div class="trade-option" data-round="2" data-option="star">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>⭐ Swing for a Star</h4>
+                                <p>Trade Pick #12 + two 2nds → Get OG Anunoby (26yo elite defender)</p>
+                                <div class="trade-example">Like when the Knicks traded for OG Anunoby</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 3</span>
+                                <span class="score-badge quality-pos">Quality: +1</span>
+                                <span class="score-badge fit-good">Fit: Perfect</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Round 3 -->
+                <div class="round-card" id="round3-card">
+                    <div class="round-header">
+                        <div class="team-situation">
+                            <div class="team-icon winnow">🏆</div>
+                            <div class="team-info">
+                                <div class="round-number">Round 3</div>
+                                <h3>WIN NOW (This year!)</h3>
+                                <p>Think: Boston Celtics</p>
+                            </div>
+                        </div>
+                        <div class="your-pick">Pick #16</div>
+                    </div>
+                    <div class="trade-options" id="round3-options">
+                        <div class="trade-option" data-round="3" data-option="tradeUp">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>⬆️ Trade Up</h4>
+                                <p>Trade Pick #16 + Pick #42 → Get Pick #10</p>
+                                <div class="trade-example">Moving up 6 spots costs assets</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 1</span>
+                                <span class="score-badge quality-pos">Quality: +1</span>
+                                <span class="score-badge fit-bad">Fit: Rookies don't help now</span>
+                            </div>
+                        </div>
+                        <div class="trade-option" data-round="3" data-option="tradeDown">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>⬇️ Trade Down</h4>
+                                <p>Trade Pick #16 → Get Pick #24 + young rotation player</p>
+                                <div class="trade-example">Getting a young developing player plus a later pick</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 2</span>
+                                <span class="score-badge quality-neg">Quality: 0</span>
+                                <span class="score-badge fit-bad">Fit: Doesn't help now</span>
+                            </div>
+                        </div>
+                        <div class="trade-option" data-round="3" data-option="keep">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>✋ Keep Pick</h4>
+                                <p>Keep Pick #16 — rookies rarely help championship teams</p>
+                                <div class="trade-example">Most championship teams don't rely on rookies</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 0</span>
+                                <span class="score-badge quality-pos">Quality: +1</span>
+                                <span class="score-badge fit-bad">Fit: Terrible for win-now!</span>
+                            </div>
+                        </div>
+                        <div class="trade-option" data-round="3" data-option="veteran">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>👔 Trade for Veteran</h4>
+                                <p>Trade Pick #16 → Get Derrick White (30yo championship guard)</p>
+                                <div class="trade-example">Like when Boston traded a 1st for Derrick White — he helped them win!</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 3</span>
+                                <span class="score-badge quality-pos">Quality: +2</span>
+                                <span class="score-badge fit-good">Fit: Perfect!</span>
+                            </div>
+                        </div>
+                        <div class="trade-option" data-round="3" data-option="star">
+                            <div class="radio"></div>
+                            <div class="trade-details">
+                                <h4>⭐ Swing for a Star</h4>
+                                <p>Trade Pick #16 + future 1st + young player → Get Mikal Bridges</p>
+                                <div class="trade-example">Like when Brooklyn traded everything for stars (risky!)</div>
+                            </div>
+                            <div class="trade-scores">
+                                <span class="score-badge value">Value: 5</span>
+                                <span class="score-badge quality-neg">Quality: -2</span>
+                                <span class="score-badge fit-good">Fit: Perfect!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Score Section -->
+            <div class="score-section">
+                <div class="score-display">
+                    <div class="score-item">
+                        <div class="label">Round 1</div>
+                        <div class="value" id="score1">—</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="label">Round 2</div>
+                        <div class="value" id="score2">—</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="label">Round 3</div>
+                        <div class="value" id="score3">—</div>
+                    </div>
+                </div>
+
+                <div class="total-score" id="totalScore">?</div>
+                <div>TOTAL POINTS</div>
+
+                <div class="gm-rating pending" id="gmRating">Make all 3 picks to see your rating!</div>
+
+                <button class="reset-btn" onclick="resetGame()">🔄 Reset & Try Again</button>
+
+                <div class="scoring-guide">
+                    <h4>📊 How Scoring Works</h4>
+                    <div class="formula">Round Score = Trade Value + Deal Quality − (Timeline Penalty × 0.25)</div>
+                    <div class="rating-tiers">
+                        <div class="tier hof">🏆 14+ pts = HALL OF FAME GM</div>
+                        <div class="tier allstar">⭐ 11-13 pts = ALL-STAR GM</div>
+                        <div class="tier solid">✅ 8-10 pts = SOLID GM (Pass!)</div>
+                        <div class="tier rookie">📚 Below 8 = ROOKIE GM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Track 201 · Module 4 · Lesson 3 — The NBA GM Challenge</p>
+        </footer>
+    </div>
+
+    <script>
+        // Trade data with scores
+        const tradeData = {
+            1: {
+                tradeUp: { value: 2, quality: 1, fit: 0 },
+                tradeDown: { value: 1, quality: 2, fit: 0 },
+                keep: { value: 1, quality: 1, fit: 0 },
+                veteran: { value: 1, quality: 0, fit: 3 },
+                star: { value: 1, quality: -2, fit: 3 }
+            },
+            2: {
+                tradeUp: { value: 2, quality: 1, fit: 1 },
+                tradeDown: { value: 2, quality: 2, fit: 1 },
+                keep: { value: 1, quality: 2, fit: 0 },
+                veteran: { value: 1, quality: -1, fit: 1 },
+                star: { value: 3, quality: 1, fit: 0 }
+            },
+            3: {
+                tradeUp: { value: 1, quality: 1, fit: 2 },
+                tradeDown: { value: 2, quality: 0, fit: 0 },
+                keep: { value: 0, quality: 1, fit: 3 },
+                veteran: { value: 3, quality: 2, fit: 0 },
+                star: { value: 5, quality: -2, fit: 0 }
+            }
+        };
+
+        // Track selections
+        const selections = {
+            1: null,
+            2: null,
+            3: null
+        };
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Trade option selection
+        document.querySelectorAll('.trade-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const round = parseInt(option.dataset.round);
+                const optionType = option.dataset.option;
+
+                // Clear previous selection in this round
+                document.querySelectorAll(`[data-round="${round}"]`).forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+
+                // Select this option
+                option.classList.add('selected');
+                selections[round] = optionType;
+
+                // Update round card
+                document.getElementById(`round${round}-card`).classList.add('selected');
+
+                // Calculate and update scores
+                updateScores();
+            });
+        });
+
+        function calculateRoundScore(round, option) {
+            const data = tradeData[round][option];
+            return data.value + data.quality - (data.fit * 0.25);
+        }
+
+        function updateScores() {
+            let total = 0;
+            let allSelected = true;
+
+            for (let round = 1; round <= 3; round++) {
+                const scoreEl = document.getElementById(`score${round}`);
+                if (selections[round]) {
+                    const score = calculateRoundScore(round, selections[round]);
+                    scoreEl.textContent = score.toFixed(2);
+                    scoreEl.classList.remove('pending');
+                    total += score;
+                } else {
+                    scoreEl.textContent = '—';
+                    scoreEl.classList.add('pending');
+                    allSelected = false;
+                }
+            }
+
+            const totalEl = document.getElementById('totalScore');
+            const ratingEl = document.getElementById('gmRating');
+
+            if (allSelected) {
+                totalEl.textContent = total.toFixed(2);
+
+                ratingEl.classList.remove('pending', 'hof', 'allstar', 'solid', 'rookie');
+
+                if (total >= 14) {
+                    ratingEl.textContent = '🏆 HALL OF FAME GM!';
+                    ratingEl.classList.add('hof');
+                } else if (total >= 11) {
+                    ratingEl.textContent = '⭐ ALL-STAR GM!';
+                    ratingEl.classList.add('allstar');
+                } else if (total >= 8) {
+                    ratingEl.textContent = '✅ SOLID GM — You Passed!';
+                    ratingEl.classList.add('solid');
+                } else {
+                    ratingEl.textContent = '📚 ROOKIE GM — Try Again!';
+                    ratingEl.classList.add('rookie');
+                }
+            } else {
+                totalEl.textContent = '?';
+                ratingEl.textContent = 'Make all 3 picks to see your rating!';
+                ratingEl.classList.remove('hof', 'allstar', 'solid', 'rookie');
+                ratingEl.classList.add('pending');
+            }
+        }
+
+        function resetGame() {
+            selections[1] = null;
+            selections[2] = null;
+            selections[3] = null;
+
+            document.querySelectorAll('.trade-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            document.querySelectorAll('.round-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            updateScores();
+        }
+    </script>
+</body>
+</html>
